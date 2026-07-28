@@ -1,0 +1,10 @@
+{
+    "version":"2.0.0",
+    "tasks": [
+        {
+            "label": "Visual VM Windows",
+            "type": "shell",
+            "command": "C:\\Users\\Public\\wpilib\\visualvm_221\\bin\\visualvm --jdkhome \"C:\\Users\\Public\\wpilib\\2026\\jdk\""
+        }
+    ]
+}
