@@ -18,21 +18,22 @@ import com.sbdc.loggerhead.LogMode;
 import com.sbdc.loggerhead.Loggable;
 import com.sbdc.loggerhead.Loggerhead;
 import com.sbdc.loggerhead.Table;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.constants.ShooterConstants;
 
 public class Flywheel extends LightSubsystem implements Loggable {
+  private interface ConstCtrl extends ShooterConstants.MotorPIDxFeedforward {}; 
+
   private TalonSRX rawMotor = new WPI_TalonSRX(ShooterConstants.flywheelMotorCanID);
   private CANcoder rawEncoder = new CANcoder(51);
 
-  // private TalonSRXSimCollection rawMotorSimCollection = rawMotor.getSimCollection();
+  private PIDController pidcontroller = new PIDController(ConstCtrl.kP, ConstCtrl.kI, ConstCtrl.kD, 0.02);
+  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ConstCtrl.kS, ConstCtrl.kV, ConstCtrl.kA);
 
-  // private FlywheelSim flywheelSim = new FlywheelSim(
-  //   LinearSystemId.createFlywheelSystem(DCMotor.getCIM(1),
-  // ShooterConstants.flywheelMOI.in(KilogramSquareMeters), 1),
-  //   DCMotor.getMiniCIM(1),
-  //   1
-  //   );
+  private double currentOutput = 0;
 
   public Flywheel() {
     TalonSRXConfiguration motorConfig = new TalonSRXConfiguration();
@@ -42,37 +43,25 @@ public class Flywheel extends LightSubsystem implements Loggable {
     motorConfig.peakCurrentDuration = 100;
     motorConfig.continuousCurrentLimit = 40;
 
-    motorConfig.remoteFilter0.remoteSensorDeviceID = 51;
-    motorConfig.remoteFilter1.remoteSensorDeviceID = 51;
-    motorConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
-    motorConfig.remoteFilter1.remoteSensorSource = RemoteSensorSource.CANCoder;
-
-    rawMotor.configSensorTerm(SensorTerm.Diff0, RemoteFeedbackDevice.RemoteSensor0);
-    rawMotor.configSensorTerm(SensorTerm.Diff1, RemoteFeedbackDevice.RemoteSensor0);
-    rawMotor.configRemoteFeedbackFilter(51, RemoteSensorSource.CANCoder, 0, 10);
-    rawMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0, 0, 10);
-    rawMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor1, 0, 10);
-
-    motorConfig.slot0.kP = 1;
-    motorConfig.slot0.kI = 0;
-    motorConfig.slot0.kD = 0;
-
     rawMotor.setInverted(InvertType.InvertMotorOutput);
     rawMotor.setNeutralMode(NeutralMode.Coast);
 
     rawMotor.configAllSettings(motorConfig);
   }
 
-  public void setSpeed(AngularVelocity speed) {
-    rawMotor.set(ControlMode.Velocity, speed.in(RPM));
-  }
-
   public void setDuty(double speed) {
     rawMotor.set(ControlMode.PercentOutput, speed);
   }
 
+  public void setSpeed(double speedRPM) {
+    pidcontroller.setSetpoint(speedRPM);
+    rawMotor.set(ControlMode.PercentOutput, currentOutput + feedforward.calculate(speedRPM));
+  }
+  
   @Override
-  public void periodic() {}
+  public void periodic() {
+    currentOutput = pidcontroller.calculate(rawEncoder.getVelocity().getValueAsDouble());
+  }
 
   @Override
   public void simulationPeriodic() {}
@@ -83,19 +72,4 @@ public class Flywheel extends LightSubsystem implements Loggable {
     parentTable.addDoubleLogger(
         "speed2", LogMode.NetworkOnly, () -> rawEncoder.getVelocity().getValueAsDouble());
   }
-  //   flywheelSim.setInput(rawMotor.getMotorOutputPercent() * RoboRioSim.getVInVoltage());
-  //   flywheelSim.update(0.02);
-
-  //   shooter_motor_sim.iterate(
-  //       Units.radiansPerSecondToRotationsPerMinute(
-  //           flywheelSim.getAngularVelocityRadPerSec()),
-  //       RoboRioSim.getVInVoltage(), 0.02
-  //   );
-
-  //   RoboRioSim.setVInVoltage(
-  //       BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
-
-  //   // Fixme! TODO: AHHHHHH
-  //   SmartDashboard.putNumber("shooter_speed", flywheelSim.getAngularVelocity().in(RPM));
-  // }
 }

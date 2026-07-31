@@ -39,18 +39,10 @@ public class RobotContainer {
 
   private void configureBindings() {
     m_driverController
-        .a()
-        .whileTrue(
-            Commands.runEnd(
-                () -> flywheel.setSpeed(RPM.of(10).times(10)),
-                () -> flywheel.setSpeed(RPM.of(0)),
-                flywheel));
-
-    m_driverController
         .b()
         .whileTrue(
             Commands.runEnd(
-                () -> flywheel.setDuty(m_driverController.getLeftTriggerAxis()),
+                () -> flywheel.setSpeed(m_driverController.getLeftTriggerAxis()),
                 () -> flywheel.setDuty(0),
                 flywheel));
   }
