@@ -27,7 +27,7 @@ import frc.robot.constants.ShooterConstants;
 public class Flywheel extends LightSubsystem implements Loggable {
 
 
-  private TalonSRX rawMotor = new WPI_TalonSRX(50);
+  private TalonSRX rawMotor = new WPI_TalonSRX(ShooterConstants.flywheelMotorCanID);
   private TalonSRXSimCollection rawMotorSimCollection = rawMotor.getSimCollection();
 
   private FlywheelSim flywheelSim = new FlywheelSim(
@@ -68,20 +68,20 @@ public class Flywheel extends LightSubsystem implements Loggable {
   }
 
   @Override
-  public void simulationPeriodic() {
-    flywheelSim.setInput(rawMotor.getMotorOutputPercent() * RoboRioSim.getVInVoltage());
-    flywheelSim.update(0.02);
+  public void simulationPeriodic() {}
+  //   flywheelSim.setInput(rawMotor.getMotorOutputPercent() * RoboRioSim.getVInVoltage());
+  //   flywheelSim.update(0.02);
     
-    shooter_motor_sim.iterate(
-        Units.radiansPerSecondToRotationsPerMinute(
-            flywheelSim.getAngularVelocityRadPerSec()), 
-        RoboRioSim.getVInVoltage(), 0.02
-    );
+  //   shooter_motor_sim.iterate(
+  //       Units.radiansPerSecondToRotationsPerMinute(
+  //           flywheelSim.getAngularVelocityRadPerSec()), 
+  //       RoboRioSim.getVInVoltage(), 0.02
+  //   );
 
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
+  //   RoboRioSim.setVInVoltage(
+  //       BatterySim.calculateDefaultBatteryLoadedVoltage(flywheelSim.getCurrentDrawAmps()));
 
-    // Fixme! TODO: AHHHHHH
-    SmartDashboard.putNumber("shooter_speed", flywheelSim.getAngularVelocity().in(RPM));
-  }
+  //   // Fixme! TODO: AHHHHHH
+  //   SmartDashboard.putNumber("shooter_speed", flywheelSim.getAngularVelocity().in(RPM));
+  // }
 }
