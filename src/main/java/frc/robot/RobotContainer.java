@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.sbdc.loggerhead.LogMode;
+import com.sbdc.loggerhead.Loggerhead;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -19,6 +21,20 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    Loggerhead.getInstance().getConfigurator().setConfigureCallback(this::configureLogging);
+    Loggerhead.getInstance().initializeLogging(true);
+  }
+
+  public void addPeriodics(Robot robot) {
+    robot.addPeriodic(Loggerhead.getInstance()::update, 0.02);
+  }
+
+  public void configureLogging() {
+    Loggerhead.getInstance()
+        .getRootTable()
+        .getSubTable("Flywheel")
+        .addLoggable(flywheel, LogMode.Both);
+    ;
   }
 
   private void configureBindings() {
@@ -28,6 +44,14 @@ public class RobotContainer {
             Commands.runEnd(
                 () -> flywheel.setSpeed(RPM.of(10).times(10)),
                 () -> flywheel.setSpeed(RPM.of(0)),
+                flywheel));
+
+    m_driverController
+        .b()
+        .whileTrue(
+            Commands.runEnd(
+                () -> flywheel.setDuty(m_driverController.getLeftTriggerAxis()),
+                () -> flywheel.setDuty(0),
                 flywheel));
   }
 
