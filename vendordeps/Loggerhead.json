@@ -1,0 +1,20 @@
+{
+    "fileName": "Loggerhead.json",
+    "name": "Loggerhead",
+    "version": "0.0.7-dev-unstable",
+    "frcYear": "2026",
+    "uuid": "c183f631-5a34-4a10-95c3-267b84b91486",
+    "mavenUrls": [
+        "https://meemkoo.github.io/loggerhead/maven"
+    ],
+    "jsonUrl": "https://meemkoo.github.io/loggerhead/vendordeps/Loggerhead-0.0.7-dev-unstable.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.sbdc.loggerhead",
+            "artifactId": "Loggerhead-java",
+            "version": "0.0.7-dev-unstable"
+        }
+    ],
+    "jniDependencies": [],
+    "cppDependencies": []
+}
