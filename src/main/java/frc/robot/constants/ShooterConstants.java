@@ -8,12 +8,12 @@ public interface ShooterConstants {
   int flywheelMotorCanID = 50;
 
   public interface MotorPIDxFeedforward {
-    double kP = 1;
+    double kP = 0;
     double kI = 0;
     double kD = 0;
 
     double kS = 0;
-    double kV = 0;
+    double kV = 0.00029;
     double kA = 0;
   }
 

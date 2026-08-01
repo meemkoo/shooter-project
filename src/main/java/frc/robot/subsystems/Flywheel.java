@@ -3,12 +3,8 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -18,20 +14,21 @@ import com.sbdc.loggerhead.LogMode;
 import com.sbdc.loggerhead.Loggable;
 import com.sbdc.loggerhead.Loggerhead;
 import com.sbdc.loggerhead.Table;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.constants.ShooterConstants;
 
 public class Flywheel extends LightSubsystem implements Loggable {
-  private interface ConstCtrl extends ShooterConstants.MotorPIDxFeedforward {}; 
+  private interface ConstCtrl extends ShooterConstants.MotorPIDxFeedforward {}
+  ;
 
   private TalonSRX rawMotor = new WPI_TalonSRX(ShooterConstants.flywheelMotorCanID);
   private CANcoder rawEncoder = new CANcoder(51);
 
-  private PIDController pidcontroller = new PIDController(ConstCtrl.kP, ConstCtrl.kI, ConstCtrl.kD, 0.02);
-  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ConstCtrl.kS, ConstCtrl.kV, ConstCtrl.kA);
+  private PIDController pidcontroller =
+      new PIDController(ConstCtrl.kP, ConstCtrl.kI, ConstCtrl.kD, 0.02);
+  private SimpleMotorFeedforward feedforward =
+      new SimpleMotorFeedforward(ConstCtrl.kS, ConstCtrl.kV, ConstCtrl.kA);
 
   private double currentOutput = 0;
 
@@ -57,10 +54,10 @@ public class Flywheel extends LightSubsystem implements Loggable {
     pidcontroller.setSetpoint(speedRPM);
     rawMotor.set(ControlMode.PercentOutput, currentOutput + feedforward.calculate(speedRPM));
   }
-  
+
   @Override
   public void periodic() {
-    currentOutput = pidcontroller.calculate(rawEncoder.getVelocity().getValueAsDouble());
+    currentOutput = pidcontroller.calculate(rawEncoder.getVelocity().getValue().in(RPM));
   }
 
   @Override
@@ -70,6 +67,6 @@ public class Flywheel extends LightSubsystem implements Loggable {
     parentTable.addDoubleLogger(
         "speed", LogMode.NetworkOnly, () -> rawMotor.getSelectedSensorVelocity());
     parentTable.addDoubleLogger(
-        "speed2", LogMode.NetworkOnly, () -> rawEncoder.getVelocity().getValueAsDouble());
+        "speed2", LogMode.NetworkOnly, () -> rawEncoder.getVelocity().getValue().in(RPM));
   }
 }

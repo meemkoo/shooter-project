@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RPM;
-
 import com.sbdc.loggerhead.LogMode;
 import com.sbdc.loggerhead.Loggerhead;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,10 +39,7 @@ public class RobotContainer {
     m_driverController
         .b()
         .whileTrue(
-            Commands.runEnd(
-                () -> flywheel.setSpeed(m_driverController.getLeftTriggerAxis()),
-                () -> flywheel.setDuty(0),
-                flywheel));
+            Commands.runEnd(() -> flywheel.setSpeed(200), () -> flywheel.setDuty(0), flywheel));
   }
 
   /**
